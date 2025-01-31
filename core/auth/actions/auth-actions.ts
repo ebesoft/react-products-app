@@ -37,6 +37,26 @@ const returnUserToken = ( data: AuthResponse ): {
 }
 
 
+export const authRegister = async( email: string, password: string, fullName: string ) => {
+    
+    email = email.toLowerCase()
+
+    try {
+        const { data } = await productsApi.post<AuthResponse>(`/auth/register`, {
+            email,
+            password,
+            fullName
+        })
+
+        return returnUserToken( data )
+    } catch (error) {
+        //throw new Error(' User and/or password not valid')
+        return null
+    }
+
+}
+
+
 export const authLogin = async( email: string, password: string ) => {
 
     email = email.toLowerCase()
@@ -62,4 +82,6 @@ export const authCheckStatus = async() => {
         return null
         //throw new Error('User not logged in')
     }
+
 }
+
