@@ -4,7 +4,8 @@ import {
     KeyboardAvoidingView, 
     useWindowDimensions, 
     View, 
-    Alert 
+    Alert, 
+    TextInput
 } from "react-native"
 
 import ThemedButton from "@/presentation/theme/components/ThemedButton"
