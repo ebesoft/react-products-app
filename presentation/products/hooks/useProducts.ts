@@ -1,7 +1,5 @@
 import { getProducts } from "@/core/products/actions/get-products.action"
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { all } from "axios"
-
 
 export const useProducts = () => {
 
