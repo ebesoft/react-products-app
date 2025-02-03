@@ -61,6 +61,8 @@ export const authLogin = async( email: string, password: string ) => {
 
     email = email.toLowerCase()
 
+    console.log("email", email, "password", password)
+
     try {
         const { data } = await productsApi.post<AuthResponse>(`/auth/login`, {
             email,

@@ -58,7 +58,6 @@ const CheckAuthenticationLayout = () => {
                     title: 'Product',
                 }} 
             />
-
         </Stack>
     )
 }

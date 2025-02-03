@@ -1,19 +1,28 @@
+import { useEffect } from "react"
 import { Size } from "@/core/products/interfaces/product.interface"
 import ProductImages from "@/presentation/products/components/ProductImages"
 import { useProduct } from "@/presentation/products/hooks/useProduct"
+import MenuIconButton from "@/presentation/theme/components/MenuIconButton"
 import ThemedButton from "@/presentation/theme/components/ThemedButton"
 
 import ThemedButtonGroup from "@/presentation/theme/components/ThemedButtonGroup"
 import ThemedTextInput from "@/presentation/theme/components/ThemedTextInput"
 import { ThemedView } from "@/presentation/theme/components/ThemedView"
-import { Ionicons } from "@expo/vector-icons"
-import { Redirect, useLocalSearchParams, useNavigation } from "expo-router"
+import { 
+    Redirect, 
+    router, 
+    useLocalSearchParams, 
+    useNavigation 
+} from "expo-router"
 import { Formik } from "formik"
-import { useEffect } from "react"
-import { View, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native"
+
+import { View, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator, RefreshControl } from "react-native"
+import { useCameraStore } from "@/presentation/store/useCameraStore"
 
 
 const ProductScreen = () => {
+
+    const { selectedImage, clearImages } = useCameraStore()
 
     const {id } = useLocalSearchParams()
     const navigation = useNavigation()
@@ -21,13 +30,23 @@ const ProductScreen = () => {
     const { productQuery, productMutation } = useProduct(`${id}`)
 
     useEffect(() => {
-
-        // TODO: comolocar nombre de producto.
-
-        navigation.setOptions({
-            headerRight: () => <Ionicons name="camera-outline" size={ 24 } />,
-        })
+        return( ) => {
+            clearImages()
+        }
     }, [])
+
+    useEffect(() => {
+        navigation.setOptions({
+          headerRight: () => (
+            <MenuIconButton
+              onPress={() => {
+                router.push('/camera');
+              }}
+              icon="camera-outline"
+            />
+          ),
+        });
+    }, []);
 
     useEffect(() => {
         if( productQuery.data){
@@ -56,16 +75,28 @@ const ProductScreen = () => {
         
         <Formik
             initialValues={product}
-            onSubmit={(productLike) => productMutation.mutate(productLike)}
+            onSubmit={(productLike) => productMutation.mutate({
+                ...productLike,
+                images: [...productLike.images, ...selectedImage]
+            })}
         >
             {({ values, handleChange, handleSubmit, setFieldValue }) => (
                 <KeyboardAvoidingView
                     behavior={ Platform.OS === "ios" ? "padding" : undefined }
                 >
-                    <ScrollView>
+                    <ScrollView
+                        refreshControl={
+                            <RefreshControl 
+                                refreshing={ productQuery.isFetching }
+                                onRefresh={ async () => { 
+                                    await productQuery.refetch()
+                                }}
+                            />
+                        }
+                    >
 
                         <ProductImages 
-                            images={values.images}
+                            images={[...values.images, ...selectedImage]}
                         />
 
                         <ThemedView style={{ marginHorizontal: 10, marginTop: 20}}>
